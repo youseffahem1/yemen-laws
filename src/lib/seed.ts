@@ -1,5 +1,6 @@
 import type Database from "better-sqlite3";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 export function seedDatabase(db: Database.Database) {
   const userCount = (db.prepare("SELECT COUNT(*) as c FROM users").get() as { c: number }).c;
@@ -10,8 +11,12 @@ export function seedDatabase(db: Database.Database) {
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
   );
 
-  const adminHash = bcrypt.hashSync("Admin@YemenLaw2026", 10);
-  const userHash = bcrypt.hashSync("YemenLaw@2026", 10);
+  // Read initial passwords from environment variables; never hardcode credentials in public repos
+  const adminPassword = process.env.INITIAL_ADMIN_PASSWORD || crypto.randomBytes(24).toString("hex");
+  const demoPassword = process.env.INITIAL_DEMO_PASSWORD || crypto.randomBytes(24).toString("hex");
+
+  const adminHash = bcrypt.hashSync(adminPassword, 10);
+  const userHash = bcrypt.hashSync(demoPassword, 10);
 
   insertUser.run(
     "يوسف الحيافي",
