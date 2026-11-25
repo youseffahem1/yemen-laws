@@ -1,9 +1,17 @@
 import { NextResponse } from "next/server";
 import { getDb, logAudit } from "@/lib/db";
 import { createSessionToken, SESSION_COOKIE_NAME, verifyPassword, type UserRole } from "@/lib/auth";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    if (!checkRateLimit(`login:${ip}`, 10, 15 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: "تم تجاوز الحد المسموح لمحاولات الدخول. يرجى المحاولة بعد 15 دقيقة." },
+        { status: 429 }
+      );
+    }
     const { email, password } = await request.json();
     if (!email || !password) {
       return NextResponse.json({ error: "يرجى إدخال البريد الإلكتروني وكلمة المرور." }, { status: 400 });

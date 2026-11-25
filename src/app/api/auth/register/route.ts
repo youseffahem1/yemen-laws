@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server";
 import { getDb, logAudit } from "@/lib/db";
 import { createSessionToken, hashPassword, SESSION_COOKIE_NAME, type UserRole } from "@/lib/auth";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 const ALLOWED_SELF_ROLES: UserRole[] = ["lawyer", "judge", "researcher", "student", "visitor"];
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    if (!checkRateLimit(`register:${ip}`, 5, 15 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: "تم تجاوز الحد المسموح لطلبات التسجيل. يرجى المحاولة لاحقاً." },
+        { status: 429 }
+      );
+    }
     const { name, email, password, role, title, syndicate_id } = await request.json();
     if (!name || !email || !password) {
       return NextResponse.json({ error: "يرجى استكمال الاسم والبريد الإلكتروني وكلمة المرور." }, { status: 400 });

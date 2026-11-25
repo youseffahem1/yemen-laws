@@ -97,30 +97,32 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {/* Demo RBAC Quick Fill */}
-        <div className="mt-6 rounded-xl border border-[#C6A253]/25 bg-[#F3EFE6] p-4 text-[11px]">
-          <div className="mb-2 font-bold text-[#0B162C]">حسابات تجريبية لاختبار الصلاحيات (RBAC):</div>
-          <div className="flex flex-wrap gap-1.5">
-            {[
-              { label: "مدير النظام", e: "admin@yemenlegal.ye", p: "Admin@YemenLaw2026" },
-              { label: "محرر قانوني", e: "editor@yemenlegal.ye", p: "YemenLaw@2026" },
-              { label: "قاضٍ", e: "judge@yemenlegal.ye", p: "YemenLaw@2026" },
-              { label: "محامٍ", e: "lawyer@yemenlegal.ye", p: "YemenLaw@2026" },
-            ].map((acc) => (
-              <button
-                key={acc.e}
-                type="button"
-                onClick={() => {
-                  setEmail(acc.e);
-                  setPassword(acc.p);
-                }}
-                className="rounded-lg border border-[#C6A253]/40 bg-white px-2.5 py-1 font-semibold text-[#0B162C] hover:bg-[#0B162C] hover:text-[#E6C97E]"
-              >
-                {acc.label}
-              </button>
-            ))}
+        {/* Demo RBAC Quick Fill (Dev only, hidden in production) */}
+        {process.env.NODE_ENV !== "production" && (
+          <div className="mt-6 rounded-xl border border-[#C6A253]/25 bg-[#F3EFE6] p-4 text-[11px]">
+            <div className="mb-2 font-bold text-[#0B162C]">حسابات تجريبية لاختبار الصلاحيات (RBAC):</div>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { label: "مدير النظام", e: "admin@yemenlegal.ye", p: "Admin@YemenLaw2026" },
+                { label: "محرر قانوني", e: "editor@yemenlegal.ye", p: "YemenLaw@2026" },
+                { label: "قاضٍ", e: "judge@yemenlegal.ye", p: "YemenLaw@2026" },
+                { label: "محامٍ", e: "lawyer@yemenlegal.ye", p: "YemenLaw@2026" },
+              ].map((acc) => (
+                <button
+                  key={acc.e}
+                  type="button"
+                  onClick={() => {
+                    setEmail(acc.e);
+                    setPassword(acc.p);
+                  }}
+                  className="rounded-lg border border-[#C6A253]/40 bg-white px-2.5 py-1 font-semibold text-[#0B162C] hover:bg-[#0B162C] hover:text-[#E6C97E]"
+                >
+                  {acc.label}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
